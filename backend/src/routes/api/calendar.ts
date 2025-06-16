@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { query, validationResult } from 'express-validator';
 import { google } from 'googleapis';
 import type { Credentials } from 'google-auth-library';
 import { getToken, saveToken, clearTokens, StoredToken } from '../../services/tokenService';
@@ -25,62 +26,79 @@ if (initialTokens) {
 
 // Listen for token refresh events
 oAuth2Client.on('tokens', (newTokens: Credentials) => {
-  console.log('oAuth2Client `tokens` event triggered:', newTokens);
-  const currentTokens = getToken(); // Get current tokens to preserve refresh_token if not in newTokens
-  let updatedTokens: StoredToken;
+  try {
+    console.log('oAuth2Client `tokens` event triggered:', newTokens);
+    const currentTokens = getToken(); // Get current tokens to preserve refresh_token if not in newTokens
+    let updatedTokens: StoredToken;
 
-  if (newTokens.refresh_token) {
-    // If a new refresh token is provided, use newTokens as the base
-    updatedTokens = {
-      access_token: newTokens.access_token!,
-      refresh_token: newTokens.refresh_token,
-      expiry_date: newTokens.expiry_date || null,
-      scope: newTokens.scope || (currentTokens?.scope),
-      token_type: newTokens.token_type || (currentTokens?.token_type),
-      id_token: newTokens.id_token || (currentTokens?.id_token),
-    };
-  } else if (currentTokens) {
-    // If only an access token is refreshed, update only that part, keep existing refresh_token
-    updatedTokens = {
-      ...currentTokens,
-      access_token: newTokens.access_token!,
-      expiry_date: newTokens.expiry_date || null,
-      scope: newTokens.scope || currentTokens.scope,
-      token_type: newTokens.token_type || currentTokens.token_type,
-      id_token: newTokens.id_token || currentTokens.id_token,
-    };
-  } else {
-    console.warn('Tokens event fired but no current tokens found and no new refresh token. Storing new tokens as is.');
-    updatedTokens = {
+    if (newTokens.refresh_token) {
+      // If a new refresh token is provided, use newTokens as the base
+      updatedTokens = {
         access_token: newTokens.access_token!,
-        refresh_token: null, 
+        refresh_token: newTokens.refresh_token,
         expiry_date: newTokens.expiry_date || null,
-        scope: newTokens.scope || undefined,
-        token_type: newTokens.token_type || undefined,
-        id_token: newTokens.id_token || undefined,
-    };
+        scope: newTokens.scope || (currentTokens?.scope),
+        token_type: newTokens.token_type || (currentTokens?.token_type),
+        id_token: newTokens.id_token || (currentTokens?.id_token),
+      };
+    } else if (currentTokens) {
+      // If only an access token is refreshed, update only that part, keep existing refresh_token
+      updatedTokens = {
+        ...currentTokens,
+        access_token: newTokens.access_token!,
+        expiry_date: newTokens.expiry_date || null,
+        scope: newTokens.scope || currentTokens.scope,
+        token_type: newTokens.token_type || currentTokens.token_type,
+        id_token: newTokens.id_token || currentTokens.id_token,
+      };
+    } else {
+      console.warn('Tokens event fired but no current tokens found and no new refresh token. Storing new tokens as is.');
+      updatedTokens = {
+          access_token: newTokens.access_token!,
+          refresh_token: null, 
+          expiry_date: newTokens.expiry_date || null,
+          scope: newTokens.scope || undefined,
+          token_type: newTokens.token_type || undefined,
+          id_token: newTokens.id_token || undefined,
+      };
+    }
+    saveToken(updatedTokens);
+    oAuth2Client.setCredentials(updatedTokens);
+    console.log('Tokens updated in DB and oAuth2Client after refresh:', updatedTokens);
+  } catch (error) {
+    console.error('Error processing token refresh event in oAuth2Client.on(\'tokens\'):', error);
+    // Depending on the severity, you might want to clear tokens or take other recovery actions,
+    // but for now, logging is the primary concern as this isn't an HTTP request handler.
   }
-  saveToken(updatedTokens);
-  oAuth2Client.setCredentials(updatedTokens);
-  console.log('Tokens updated in DB and oAuth2Client after refresh:', updatedTokens);
 });
 
 // 1. Redirect user to Google's consent screen
 router.get('/auth', (req: Request, res: Response) => {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline', // Ensures we get a refresh token
-    scope: ['https://www.googleapis.com/auth/calendar.readonly'],
-    prompt: 'consent', // Important to get a refresh token on first auth, and on subsequent if it was revoked
-  });
-  res.redirect(authUrl);
+  try {
+    const authUrl = oAuth2Client.generateAuthUrl({
+      access_type: 'offline', // Ensures we get a refresh token
+      scope: ['https://www.googleapis.com/auth/calendar.readonly'],
+      prompt: 'consent', // Important to get a refresh token on first auth, and on subsequent if it was revoked
+    });
+    res.redirect(authUrl);
+  } catch (error) {
+    console.error('Error generating auth URL:', error);
+    res.status(500).json({ success: false, message: 'Failed to generate authentication URL', error: (error as Error).message });
+  }
 });
 
 // 2. Handle the OAuth 2.0 server response
-router.get('/auth/callback', async (req: Request, res: Response) => {
-  const { code } = req.query;
-  if (!code) {
-    return res.status(400).send('Authorization code is missing');
+router.get('/auth/callback', [
+  query('code').notEmpty().withMessage('Authorization code cannot be empty.').isString().withMessage('Authorization code must be a string.')
+], async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
   }
+
+  // The validation above handles the presence and type of 'code'.
+  // We can directly access it now, assuming validation passed.
+  const code = req.query.code as string;
   try {
     const { tokens: newTokensFromGoogle } = await oAuth2Client.getToken(code as string);
     // Store all tokens, including the refresh_token
@@ -92,7 +110,7 @@ router.get('/auth/callback', async (req: Request, res: Response) => {
     res.redirect('http://localhost:5173'); // Redirect to your frontend
   } catch (error) {
     console.error('Error acquiring tokens:', error);
-    res.status(500).send('Failed to acquire tokens');
+    res.status(500).json({ success: false, message: 'Failed to acquire tokens', error: (error as Error).message });
   }
 });
 
@@ -100,7 +118,7 @@ router.get('/auth/callback', async (req: Request, res: Response) => {
 router.get('/events', async (req: Request, res: Response) => {
   const currentTokens = getToken();
   if (!currentTokens || !currentTokens.access_token) { // Check for access_token specifically
-    return res.status(401).json({ message: 'User not authenticated or access token missing. Please authenticate via /api/calendar/auth' });
+    return res.status(401).json({ success: false, message: 'User not authenticated or access token missing. Please authenticate via /api/calendar/auth' });
   }
 
   // Set credentials before every API call that might need auth.
@@ -126,9 +144,9 @@ router.get('/events', async (req: Request, res: Response) => {
       console.log('Authentication error (401) encountered. Clearing stored tokens.');
       // Clear tokens to force re-authentication
       clearTokens(); 
-      return res.status(401).json({ message: 'Authentication error. Please log in again.' });
+      return res.status(401).json({ success: false, message: 'Authentication error. Please log in again.' });
     }
-    res.status(500).json({ message: 'Failed to fetch calendar events', error: error.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch calendar events', error: error.message });
   }
 });
 
