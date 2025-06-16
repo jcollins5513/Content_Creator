@@ -1,0 +1,4 @@
+*env
+
+# Database files
+backend/app_tokens.db
