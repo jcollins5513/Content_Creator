@@ -36,7 +36,8 @@ This document outlines the high-level roadmap for creating the 3D Isometric Smar
   - Connect the UI to the backend API to fetch and display calendar events on the 3D panel.
 
 - [ ] **Phase 6: Finalization & Deployment**
-  - Refine UI/UX and 3D interactions.
+  - [x] Backend hardening (token storage, error handling, input validation) complete.
+  - [ ] Refine UI/UX and 3D interactions.
   - Perform end-to-end testing.
   - Prepare the application for deployment (e.g., as a web app or packaged for a specific TV OS).
   - Document the project setup and API usage.

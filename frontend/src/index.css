@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Color Palette */
+  --background-start: #1a1a2e;
+  --background-end: #16213e;
+  --panel-bg: rgba(44, 44, 84, 0.5);
+  --panel-border: rgba(255, 255, 255, 0.2);
+  --glow-color: rgba(0, 255, 255, 0.3);
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+
+  /* Fonts */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  color: var(--text-primary);
+  background: linear-gradient(45deg, var(--background-start), var(--background-end));
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
+  padding: 1.5rem;
+  color: var(--text-primary);
+  height: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}

@@ -1,0 +1,23 @@
+.dashboard-grid {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    'media calendar'
+    'media new-feature';
+}
+
+.media-player-panel {
+  grid-area: media;
+}
+
+.calendar-panel {
+  grid-area: calendar;
+}
+
+.new-feature-panel {
+  grid-area: new-feature;
+}
