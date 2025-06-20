@@ -24,7 +24,7 @@ We are closing this conversation and transitioning to the next session. Please d
 
 ---
 
-## ✉️ 3. Generate Next Conversation Prompt
+## ✉️ 3. Generate Next Conversation Prompt so I have it if I go to a new location. Include it at the end of the granular-plan.md titled "New Conversation Prompt" 
 
 - Provide a clean Windsurf-ready prompt I can use at the start of my next conversation.
 - The prompt should:
@@ -35,3 +35,4 @@ We are closing this conversation and transitioning to the next session. Please d
 ---
 
 This will close the current conversation, preserve all context, and fully prepare the workspace for the next one.
+

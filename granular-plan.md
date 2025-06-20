@@ -109,3 +109,19 @@ The user wants to:
    5.2 Remove inline styles flagged by ESLint.
 
 *Prepared for next conversation.*
+
+✉️ Next-Conversation Prompt
+We’re picking up Phase 6 – UI Polish & Animation.
+
+Please help with:
+
+Installing Framer-Motion in the frontend workspace.
+Adding entrance / exit animations to the 
+MediaSelector
+ overlay and dashboard panels.
+Replacing icon-only cards with the image thumbnails I’ll provide in src/assets/.
+Debugging the media-loading issue in 
+MediaPanel
+ (GET /api/media returns empty).
+Updating the Calendar header to show today’s Central-Time date (“June 21, 2025 – 2:00 PM CT”).
+All styling must stay consistent with our glass-morphism theme.
