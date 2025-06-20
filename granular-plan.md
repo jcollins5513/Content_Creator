@@ -48,3 +48,36 @@ Please start by helping me debug the UI. We need to:
 5. Verify the UI displays correctly without errors.
 
 Once the UI error is resolved, we will move on to backend testing as previously planned.
+
+---
+
+## 🔄 Next Session Focus – UI Enhancements (Media Selector & Calendar Header)
+
+**Context**
+The user wants to:
+1. Introduce a *media selector* screen shown immediately after login so that the main dashboard real-estate is not consumed by media thumbnails.
+2. Change the *Calendar* panel header so it shows **today’s date** in **Central Time (CT)** rather than the static "Calendar" text.
+
+**Sub-tasks**
+1. Media Selector Screen
+   1.1 Analyse existing auth/login flow to identify best insertion point for selector component/modal.
+   1.2 Design lightweight selector UI (thumbnail grid or list) that overlays or precedes dashboard.
+   1.3 Hook selector up to existing media-list endpoint.
+   1.4 Emit selected media back to dashboard/media player panel.
+2. Calendar Header Update
+   2.1 Add utility to get current date formatted as `MMMM D, YYYY – h:mm A CT`.
+   2.2 Replace hard-coded "Calendar" header text with computed date string.
+   2.3 Ensure header updates on page load and stays static (no ticking clock needed).
+3. Regression Check
+   3.1 Build & run app, verify selector appears post-login.
+   3.2 Ensure dashboard layout unaffected once media chosen.
+   3.3 Confirm Calendar panel header shows correct Central Time date.
+
+**Dependencies / Notes**
+- Utilise existing media API; no backend change expected.
+- Central Time can be derived with `Intl.DateTimeFormat` and `America/Chicago` timezone.
+- Keep styles consistent with current glass-morphism theme.
+
+---
+
+*Prepared for next conversation.*

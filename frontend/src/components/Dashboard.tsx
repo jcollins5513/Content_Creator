@@ -5,15 +5,17 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   return (
-    <div className="dashboard-grid">
-      <div className="media-player-panel">
-        <MediaPlayerPanel />
-      </div>
-      <div className="calendar-panel">
-        <CalendarPanel />
-      </div>
-      <div className="new-feature-panel">
-        <NewFeaturePanel />
+    <div className="dashboard-container">
+      <div className="dashboard-grid">
+        <div className="panel glass-panel media-player-panel">
+          <MediaPlayerPanel />
+        </div>
+        <div className="panel glass-panel calendar-panel">
+          <CalendarPanel />
+        </div>
+        <div className="panel glass-panel new-feature-panel">
+          <NewFeaturePanel />
+        </div>
       </div>
     </div>
   );
