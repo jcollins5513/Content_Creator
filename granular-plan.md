@@ -80,4 +80,32 @@ The user wants to:
 
 ---
 
+### ✅ Session Summary (June 20, 2025)
+- Fixed workspace dependency issue causing Vite to fail (React symlinks, port cleanup).
+- Implemented `MediaSelector` overlay with icons, glass-morphism styling, basic animations, and 50 / 25 / 25 grid.
+- Added Tailwind keyframes and installed `@heroicons/react`.
+- Dev server confirmed running.
+- Identified enhancement needs: richer animations (Framer-Motion), background assets, polished spacing, media-loading bug in `MediaPanel`.
+
+---
+
+## 🔄 Next Session Focus – UI Polish & Animation
+
+**Sub-tasks**
+1. **Integrate Framer-Motion**
+   1.1 Install `framer-motion`.
+   1.2 Animate selector modal (backdrop fade, scale-in, exit motion).
+   1.3 Animate dashboard panels on mount.
+2. **Visual Assets**
+   2.1 Add user-provided thumbnails (`images-thumb.jpg`, `videos-thumb.jpg`, `audio-thumb.jpg`) under `src/assets/`.
+   2.2 Replace icon-only cards with thumbnail + label.
+3. **Media Loading Bug**
+   3.1 Verify backend `GET /api/media` returns data.
+   3.2 Adjust fetch URL / CORS if needed; display thumbnails in MediaPanel.
+4. **Calendar Header**
+   4.1 Format Central Time date string and update header.
+5. **Stretch**
+   5.1 Optional background texture / brand colors integration.
+   5.2 Remove inline styles flagged by ESLint.
+
 *Prepared for next conversation.*

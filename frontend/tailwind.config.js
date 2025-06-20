@@ -6,6 +6,20 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        fadein: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        scalein: {
+          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        fadein: 'fadein 0.3s ease-out forwards',
+        scalein: 'scalein 0.3s ease-out forwards',
+      },
       colors: {
         // Use flat structure for gradient utilities
         'background-start': '#1a1a2e',
